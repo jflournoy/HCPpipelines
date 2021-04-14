@@ -252,6 +252,32 @@ if [ "$Confound" != "NONE" ] ; then
 	confound_matrix=$( ls -d ${ResultsFolder}/${LevelOnefMRIName}/${Confound} 2>/dev/null )
 fi
 
+
+####### Test Empty EV block #######
+fsf="${FEATDir}/design.fsf"
+# Use grep to find lines in fsf that list EV text files. Those lines look like this:
+# set fmri(custom1) "../EVs/guess.txt"
+# set fmri(custom2) "../EVs/miss.txt"
+# Use grep to find the EV text files, and loop over those EV files
+grep -e 'fmri(custom' < $fsf | while read line; do
+	# Figure out which EV number this is (sed replace characters before and after EV number)
+	custom=`echo $line | sed -e 's|.*custom||' -e 's|).*||' `;  
+	# get path to EV from text between double-quotes
+	ev=`echo $line | cut -d\" -f2`;
+	# Find length (number of lines) for EV, assuming path to EVs is relative to $FEATDir
+	count=`awk '{ if ($3 != 0) print $0 }' ${FEATDir}/$ev |wc -l`;
+	if [ $count -eq 0 ]; # if EV is empty
+	then
+		# Change the EV shape to Empty EV shape
+		# set fmri(shape2) 3  # custom 3-column
+		# set fmri(shape2) 10 # empty EV
+		sed -i -e "s|fmri(shape${custom}).*|fmri(shape${custom}) 10|" $fsf
+		log_Msg "EMPTY custom${custom} $ev $count in $fsf";
+	else
+		log_Msg "FULL  custom${custom} $ev $count in $fsf";
+	fi;
+done
+
 # Run feat_model inside $FEATDir
 cd $FEATDir # so feat_model can interpret relative paths in fsf file
 feat_model ${FEATDir}/design ${confound_matrix}; # $confound_matrix string is blank if file is missing
