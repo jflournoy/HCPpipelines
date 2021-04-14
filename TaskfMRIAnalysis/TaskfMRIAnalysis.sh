@@ -125,8 +125,8 @@ fi
 log_Msg "Platform Information Follows: "
 uname -a
 
-opts_ShowVersionIfRequested $@
-${HCPPIPEDIR}/show_version
+#opts_ShowVersionIfRequested $@
+#${HCPPIPEDIR}/show_version
 
 log_Check_Env_Var HCPPIPEDIR
 log_Check_Env_Var FSLDIR
