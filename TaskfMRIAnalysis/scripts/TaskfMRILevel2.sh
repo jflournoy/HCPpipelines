@@ -205,7 +205,7 @@ done
 ### Determine list of contrasts for this analysis
 FirstFolder=`echo $LevelOneFEATDirSTRING | cut -d " " -f 1`
 ContrastNames=`cat ${FirstFolder}/design.con | grep "ContrastName" | cut -f 2`
-NumContrasts=`echo ${ContrastNames} | wc -l`
+NumContrasts=`echo ${ContrastNames} | wc -w`
 
 
 ##### MAKE DESIGN FILES AND LEVEL2 DIRECTORY #####
