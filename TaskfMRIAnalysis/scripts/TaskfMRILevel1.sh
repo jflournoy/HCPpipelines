@@ -539,4 +539,18 @@ if $runVolume ; then
 	rm -f ${SmoothedDilatedResultFile}*.nii.gz
 fi
 
+# Clean up contrasts where cope has no non-zero voxels (created from 'versus rest' contrasts from conditions with empty EVs)
+# NOTE WELL: This will not remove 'condition A versus condition B' contrasts where one condition has no events.
+for file in $( ls ${FEATDir}/GrayordinatesStats/cope*.dtseries.nii ); do 
+    filebase=$( basename $file )
+    sd=$( fslstats $file -V | awk '{ print $1 }' )
+    if [ $sd == 0 ]; then 
+        log_Msg "CLEANUP $filebase has 0 non-zero voxels. Removing all associated files."
+        prefixes=( cope pe tstat varcope zstat )
+        for pre in "${prefixes[@]}"; do 
+            rm -v "${FEATDir}/GrayordinatesStats/$pre${filebase#cope}"
+        done
+    fi
+done
+
 log_Msg "MAIN: Complete"
