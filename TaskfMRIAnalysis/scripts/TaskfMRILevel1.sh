@@ -541,7 +541,12 @@ fi
 
 # Clean up contrasts where cope has no non-zero voxels (created from 'versus rest' contrasts from conditions with empty EVs)
 # NOTE WELL: This will not remove 'condition A versus condition B' contrasts where one condition has no events.
-for file in $( ls ${FEATDir}/GrayordinatesStats/cope*.dtseries.nii ); do 
+if $runParcellated ; then
+	statsdir=${FEATDir}/ParcellatedStats
+else
+	statsdir=${FEATDir}/GrayordinatesStats
+fi
+for file in $( ls ${statsdir}/cope*.dtseries.nii ); do 
     filebase=$( basename $file )
     sd=$( fslstats $file -V | awk '{ print $1 }' )
     if [ $sd == 0 ]; then 
