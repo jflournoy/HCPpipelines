@@ -546,14 +546,14 @@ if $runParcellated ; then
 else
 	statsdir=${FEATDir}/GrayordinatesStats
 fi
-for file in $( ls ${statsdir}/cope*.dtseries.nii ); do 
+for file in $( ls ${statsdir}/cope*.*tseries.nii ); do 
     filebase=$( basename $file )
     sd=$( fslstats $file -V | awk '{ print $1 }' )
     if [ $sd == 0 ]; then 
         log_Msg "CLEANUP $filebase has 0 non-zero voxels. Removing all associated files."
         prefixes=( cope pe tstat varcope zstat )
         for pre in "${prefixes[@]}"; do 
-            rm -v "${FEATDir}/GrayordinatesStats/$pre${filebase#cope}"
+            rm -v "${statsdir}/$pre${filebase#cope}"
         done
     fi
 done
